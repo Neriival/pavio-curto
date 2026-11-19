@@ -1,0 +1,24 @@
+/* Editor de fases */
+.ed-layout { display: grid; grid-template-columns: 1fr 300px; gap: 14px; align-items: start; margin-top: 10px; }
+.ed-board canvas { width: 100%; height: auto; display: block; border-radius: 12px; box-shadow: 0 0 0 4px #0c0a1a; cursor: crosshair; touch-action: none; }
+.ed-side { background: var(--panel); border: 2px solid var(--line); border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.ed-meta { display: flex; flex-direction: column; gap: 8px; }
+.ed-meta label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.tool-group h4 { margin: 4px 0 6px; font-size: 13px; color: var(--muted); }
+.tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.tool {
+  font: inherit; font-size: 11px; font-weight: 700; color: var(--ink); background: var(--bg2);
+  border: 2px solid var(--line); border-radius: 10px; padding: 4px 2px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 58px;
+}
+.tool canvas { width: 32px; height: 32px; }
+.tool .ti { font-size: 22px; line-height: 32px; }
+.tool.on { border-color: var(--accent); background: #3a2f22; }
+.ed-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.ed-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.lv-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.lv-btns { display: flex; gap: 6px; }
+
+@media (max-width: 860px) {
+  .ed-layout, .ed-bottom { grid-template-columns: 1fr; }
+}

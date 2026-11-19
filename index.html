@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pavio Curto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700;900&family=Audiowide&family=Rubik+Dirt&family=Rubik+Burned&family=Rubik+Puddles&family=Snowburst+One&family=Chewy&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/menus.css">
+  <link rel="stylesheet" href="css/shop.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== MENU PRINCIPAL ===== -->
+    <section id="menu" class="screen">
+      <h1 class="logo">Pavio <span>Curto</span></h1>
+      <p class="tagline">Bombas, magias e armaduras: sozinho ou com os amigos.</p>
+      <button id="profileBadge" class="profile-badge"></button>
+      <canvas id="titleCv" width="780" height="170"></canvas>
+      <div class="menu-btns">
+        <button class="btn big" data-go="campaign">🗺️ Campanha</button>
+        <button class="btn big" data-go="battle">⚔️ Batalha</button>
+        <button class="btn big" data-go="online">🌐 Online</button>
+        <div class="menu-row">
+          <button class="btn alt" data-go="equip">🛡️ Equipamento</button>
+          <button class="btn alt" data-go="shop">🛒 Loja</button>
+          <button class="btn alt" data-go="stats" id="btnMenuStats">📈 Status</button>
+        </div>
+        <button class="boss-banner hidden" id="bossBanner"></button>
+        <div class="menu-row">
+          <button class="btn ghost" data-go="editor">🛠️ Editor</button>
+          <button class="btn ghost" data-go="help">❔ Ajuda</button>
+          <button class="btn ghost" data-go="settings">⚙️ Config.</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EQUIPAMENTO ===== -->
+    <section id="equip" class="screen hidden">
+      <div class="shop-head">
+        <h2>🛡️ Equipamento</h2>
+        <div class="eq-head-right">
+          <div class="eq-level" id="eqLevel"></div>
+          <div class="coins" id="eqCoins"></div>
+        </div>
+      </div>
+      <div class="eq-layout">
+        <div class="card eq-doll">
+          <div class="eq-char">
+            <canvas class="preview" id="eqCv" width="200" height="200"></canvas>
+            <div class="picker fit-picker"><button id="eqPrev" aria-label="anterior">◀</button><div class="cname" id="eqName"></div><button id="eqNext" aria-label="próximo">▶</button></div>
+          </div>
+          <div class="eq-slots" id="eqSlots"></div>
+          <div class="eq-totals" id="eqTotals"></div>
+        </div>
+        <div class="eq-shop">
+          <div class="tabs" id="eqTabs"></div>
+          <p id="eqMsg" class="status"></p>
+          <div class="eq-items" id="eqItems"></div>
+        </div>
+      </div>
+      <div class="row setup-foot"><button class="btn ghost" data-go="menu">← Voltar</button></div>
+    </section>
+
+    <!-- ===== CONFIGURAÇÕES ===== -->
+    <section id="settings" class="screen hidden">
+      <div class="setup-head">
+        <h2>⚙️ Configurações</h2>
+        <p class="muted">Clique numa tecla e aperte a nova tecla no teclado. Se ela já estiver em uso, as duas trocam de lugar. <kbd>Esc</kbd> cancela.</p>
+      </div>
+      <div class="settings-layout">
+        <div class="card keys-card" data-scheme="kbA"></div>
+        <div class="card keys-card" data-scheme="kbB"></div>
+        <aside class="card settings-side">
+          <h3>🔊 Som</h3>
+          <button class="btn small" id="setSound"></button>
+          <h3>🎮 Controle (joystick)</h3>
+          <p class="muted small">Analógico ou direcional anda · A bomba · X magia · LB/RB trocam o alvo · Y pulo.</p>
+          <h3>🖱️ Mouse</h3>
+          <p class="muted small">Clique num personagem para mirar nele; botão direito mira e já lança a magia.</p>
+          <p class="muted small"><kbd>Esc</kbd>/<kbd>P</kbd> pausam e <kbd>M</kbd> liga o som: essas teclas são reservadas.</p>
+        </aside>
+      </div>
+      <p id="setMsg" class="status" style="text-align:center"></p>
+      <div class="row setup-foot"><button class="btn ghost" data-go="menu">← Voltar</button></div>
+    </section>
+
+    <!-- ===== CONFIGURAÇÃO LOCAL ===== -->
+    <section id="setup" class="screen hidden">
+      <div class="setup-head">
+        <h2 id="setupTitle">Batalha local</h2>
+        <p id="setupHint" class="muted"></p>
+      </div>
+      <div class="setup-layout">
+        <div class="setup-players">
+          <div id="slots" class="slots"></div>
+          <div id="slotsAdd" class="slots-add"></div>
+        </div>
+        <aside class="setup-panel card">
+          <h3>⚙️ Partida</h3>
+          <div id="battleOpts" class="side-opts">
+            <label>🎚️ Dificuldade
+              <select id="optDiff"><option value="facil">😊 Fácil</option><option value="medio" selected>😐 Médio</option><option value="dificil">😈 Difícil</option></select>
+              <span class="hint" id="diffHint"></span>
+            </label>
+            <label>🤖 Quantidade de bots
+              <select id="optBots"></select>
+              <span class="hint" id="botsHint"></span>
+            </label>
+            <label>🏆 Vitórias para ganhar
+              <select id="optWins"><option>1</option><option>2</option><option selected>3</option><option>5</option></select>
+            </label>
+            <label>⏱️ Tempo por rodada
+              <select id="optTime"><option value="120">2:00</option><option value="150" selected>2:30</option><option value="210">3:30</option></select>
+            </label>
+            <label>🗺️ Arena <select id="optArena"></select></label>
+          </div>
+          <div id="campOpts" class="side-opts">
+            <label>🗺️ Fases <select id="optLevels"></select></label>
+          </div>
+          <p id="setupErr" class="err"></p>
+          <button class="btn big" id="btnStartLocal">Começar!</button>
+        </aside>
+      </div>
+      <div class="row setup-foot">
+        <button class="btn ghost" data-go="menu">← Voltar</button>
+      </div>
+    </section>
+
+    <!-- ===== ONLINE ===== -->
+    <section id="online" class="screen hidden">
+      <h2>Jogar online</h2>
+      <p class="muted">Crie uma sala e passe o código para seus amigos, ou entre com o código de alguém. Você joga com o perfil atual (roupinhas, magia e equipamentos).</p>
+      <label class="field">Seu nome <input id="netName" maxlength="10" placeholder="Jogador"></label>
+      <div class="online-grid">
+        <div class="card">
+          <h3>Criar sala</h3>
+          <p class="muted">Você será o anfitrião (até 4 jogadores).</p>
+          <button class="btn big" id="btnHost">Criar sala</button>
+        </div>
+        <div class="card">
+          <h3>Entrar em sala</h3>
+          <input id="joinCode" class="code-input" maxlength="5" placeholder="CÓDIGO">
+          <button class="btn big" id="btnJoin">Entrar</button>
+        </div>
+      </div>
+      <p id="netStatus" class="status"></p>
+      <div class="row"><button class="btn ghost" data-go="menu">← Voltar</button></div>
+    </section>
+
+    <!-- ===== SALA ONLINE ===== -->
+    <section id="lobby" class="screen hidden">
+      <h2>Sala <span id="lobbyCode" class="code"></span></h2>
+      <p id="lobbyHint" class="muted"></p>
+      <div id="lobbySlots" class="slots"></div>
+      <div id="lobbyHost" class="opts">
+        <label>Modo
+          <select id="lobMode"><option value="battle">Batalha</option><option value="campaign">Campanha (co-op)</option></select>
+        </label>
+        <label>Vitórias para ganhar
+          <select id="lobWins"><option>1</option><option>2</option><option selected>3</option><option>5</option></select>
+        </label>
+        <button class="btn" id="btnAddCpu">+ Adicionar CPU</button>
+      </div>
+      <p id="lobbyErr" class="err"></p>
+      <div class="row">
+        <button class="btn ghost" id="btnLeave">← Sair da sala</button>
+        <button class="btn big" id="btnStartOnline">Começar!</button>
+      </div>
+    </section>
+
+    <!-- ===== LOJA ===== -->
+    <section id="shop" class="screen hidden">
+      <div class="shop-head">
+        <h2>🛒 Loja</h2>
+        <div class="coins" id="shopCoins"></div>
+      </div>
+      <div class="profile-bar card">
+        <label>Perfil <select id="shopProfile"></select></label>
+        <input id="profileName" maxlength="10" placeholder="Nome">
+        <button class="btn small" id="btnNewProfile">+ Novo perfil</button>
+        <button class="btn small ghost" id="btnRenameProfile">Renomear</button>
+        <button class="btn small ghost" id="btnDelProfile">Excluir perfil</button>
+      </div>
+      <p id="shopMsg" class="status"></p>
+      <div class="shop-body">
+        <aside class="fitting card">
+          <h3>Provador</h3>
+          <canvas class="preview" id="fitCv" width="190" height="190"></canvas>
+          <div class="picker fit-picker"><button id="fitPrev" aria-label="anterior">◀</button><div class="cname" id="fitName"></div><button id="fitNext" aria-label="próximo">▶</button></div>
+          <div id="fitInfo" class="fit-info"></div>
+        </aside>
+        <div class="shop-main">
+          <div class="tabs" id="shopTabs"></div>
+          <div class="items" id="shopItems"></div>
+          <p class="muted small">Ganhe moedas jogando: derrotar inimigos, vencer rodadas e concluir fases. Tudo fica salvo no perfil deste navegador.</p>
+        </div>
+      </div>
+      <div class="row"><button class="btn ghost" data-go="menu">← Voltar</button></div>
+    </section>
+
+    <!-- ===== STATUS DA CONTA ===== -->
+    <section id="stats" class="screen hidden">
+      <div class="setup-head">
+        <h2>📈 Status da conta</h2>
+        <p class="muted">Os pontos valem para <b>qualquer personagem</b> que este perfil usar. Ganhe pontos vencendo o Desafio do Chefe, liberado a cada <span id="stMatchesNeed"></span> partidas.</p>
+      </div>
+      <div class="stats-layout">
+        <div class="card stats-card">
+          <div class="stats-top">
+            <label>Perfil <select id="stProfile"></select></label>
+            <div class="points" id="stPoints"></div>
+          </div>
+          <div id="stRows"></div>
+          <div class="row stats-actions">
+            <button class="btn small ghost" id="stReset">↺ Redistribuir pontos</button>
+          </div>
+        </div>
+        <aside class="card boss-card">
+          <h3>👑 Desafio do Chefe</h3>
+          <div id="stBoss"></div>
+          <button class="btn big" id="stFight">Enfrentar o chefe!</button>
+          <p class="muted small">Contam as partidas terminadas de Batalha, Campanha e Online. Vencer o chefe dá +<span id="stBossPts"></span> pontos e moedas. Se perder, pode tentar de novo.</p>
+        </aside>
+      </div>
+      <div class="row setup-foot"><button class="btn ghost" data-go="menu">← Voltar</button></div>
+    </section>
+
+    <!-- ===== EDITOR DE FASES ===== -->
+    <section id="editor" class="screen hidden">
+      <h2>🛠️ Editor de fases</h2>
+      <p class="muted">Clique ou arraste para pintar · botão direito apaga. As casas claras nos cantos são os pontos de início.</p>
+      <div class="ed-layout">
+        <div class="ed-board"><canvas id="edCv"></canvas></div>
+        <aside class="ed-side">
+          <div class="ed-meta">
+            <label>Nome <input id="edName" maxlength="24"></label>
+            <label>Tema <select id="edTheme"></select></label>
+          </div>
+          <div id="edTools"></div>
+          <div class="ed-actions">
+            <button class="btn small ghost" id="edNew">Nova</button>
+            <button class="btn small ghost" id="edRandom">Aleatória</button>
+            <button class="btn small" id="edSave">💾 Salvar</button>
+            <button class="btn small" id="edTest">▶ Testar</button>
+          </div>
+          <p id="edMsg" class="status"></p>
+        </aside>
+      </div>
+      <div class="ed-bottom">
+        <div class="card">
+          <h3>Minhas fases</h3>
+          <div id="edList"></div>
+        </div>
+        <div class="card">
+          <h3>Compartilhar</h3>
+          <textarea id="edCode" rows="3" placeholder="Cole aqui o código de uma fase para importar"></textarea>
+          <div class="ed-actions">
+            <button class="btn small ghost" id="edExport">Exportar código</button>
+            <button class="btn small ghost" id="edImport">Importar código</button>
+          </div>
+        </div>
+      </div>
+      <div class="row"><button class="btn ghost" data-go="menu">← Voltar</button></div>
+    </section>
+
+    <!-- ===== AJUDA ===== -->
+    <section id="help" class="screen hidden">
+      <h2>Como jogar</h2>
+      <div class="help-grid">
+        <div class="card"><h3>Controles</h3><div id="helpKeys"></div></div>
+        <div class="card">
+          <h3>Modos</h3>
+          <p><b>Campanha:</b> 50 fases em 5 mundos, com um chefe no fim de cada mundo. Quando chega a um mundo novo, você pode começar direto dele da próxima vez. Derrote todos os inimigos e encontre o portal escondido sob algum bloco. Jogue sozinho ou em grupo.</p>
+          <p><b>Batalha:</b> até 4 jogadores (pessoas ou CPU), com bots no Fácil, Médio ou Difícil. O último de pé vence a rodada. Quando o tempo acaba, a arena começa a fechar!</p>
+          <p><b>Vida:</b> cada personagem tem pontos de vida ❤ (de 90 a 140). Bombas tiram 35, inimigos 30, magias 20 ou mais e o Rei Magma 60. Equipamentos diminuem o dano.</p>
+          <p><b>Moedas 💰:</b> ganhe jogando e gaste na Loja.</p>
+        </div>
+        <div class="card"><h3>Magias e equipamentos</h3><div id="helpSpells"></div>
+          </div>
+        <div class="card"><h3>Itens</h3><div id="helpItems"></div></div>
+        <div class="card"><h3>Personagens</h3><div id="helpChars"></div></div>
+      </div>
+      <div class="row"><button class="btn ghost" data-go="menu">← Voltar</button></div>
+    </section>
+
+    <!-- ===== JOGO ===== -->
+    <section id="gameWrap" class="hidden">
+      <div id="hud"></div>
+      <div class="stage" id="stage">
+        <canvas id="cv"></canvas>
+        <div id="overlay"></div>
+      </div>
+      <div class="game-foot">
+        <div id="spellBar" class="spell-bar hidden">
+          <button class="btn small spell-btn" id="btnSpell" title="Lançar magia (Q)"></button>
+          <button class="btn small ghost" id="btnTarget" title="Trocar de alvo (R) · ou clique num personagem">🎯 Trocar alvo</button>
+          <span id="spellTarget" class="spell-target"></span>
+        </div>
+        <button class="btn small ghost" id="btnPause">⏸ Menu (Esc)</button>
+        <button class="btn small ghost" id="btnMute">🔊 Som (M)</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Biblioteca externa (online) -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <!-- Dados -->
+  <script src="js/data/constants.js"></script>
+  <script src="js/data/characters.js"></script>
+  <script src="js/data/items.js"></script>
+  <script src="js/data/shop.js"></script>
+  <script src="js/data/enemies.js"></script>
+  <script src="js/data/themes.js"></script>
+  <script src="js/data/levels.js"></script>
+  <script src="js/data/progress.js"></script>
+  <script src="js/data/equipment.js"></script>
+  <!-- Motor -->
+  <script src="js/engine/grid.js"></script>
+  <script src="js/engine/game.js"></script>
+  <script src="js/engine/ai.js"></script>
+  <!-- Gráficos -->
+  <script src="js/render/draw.js"></script>
+  <script src="js/render/gear.js"></script>
+  <script src="js/render/characters.js"></script>
+  <script src="js/render/enemies.js"></script>
+  <script src="js/render/world.js"></script>
+  <!-- Sistemas -->
+  <script src="js/systems/input.js"></script>
+  <script src="js/systems/audio.js"></script>
+  <script src="js/systems/net.js"></script>
+  <script src="js/systems/profiles.js"></script>
+  <script src="js/systems/level-store.js"></script>
+  <!-- Telas -->
+  <script src="js/ui/app.js"></script>
+  <script src="js/ui/session.js"></script>
+  <script src="js/ui/hud.js"></script>
+  <script src="js/ui/setup.js"></script>
+  <script src="js/ui/online.js"></script>
+  <script src="js/ui/shop.js"></script>
+  <script src="js/ui/stats.js"></script>
+  <script src="js/ui/equip.js"></script>
+  <script src="js/ui/settings.js"></script>
+  <script src="js/ui/editor.js"></script>
+  <script src="js/ui/menu.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
